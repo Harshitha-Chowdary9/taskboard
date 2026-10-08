@@ -1,0 +1,19 @@
+* { box-sizing: border-box; }
+body { margin: 0; display: flex; min-height: 100vh; font-family: system-ui, sans-serif; background: #f4f5f7; color: #222; }
+aside { width: 240px; padding: 1rem; background: #1f2937; color: #fff; }
+aside h1 { font-size: 1.3rem; }
+aside ul { list-style: none; padding: 0; }
+aside li { padding: .5rem; border-radius: 6px; cursor: pointer; display: flex; justify-content: space-between; }
+aside li.active, aside li:hover { background: #374151; }
+main { flex: 1; padding: 1.5rem; }
+form { display: flex; gap: .5rem; margin-bottom: 1rem; }
+input, select, button { padding: .5rem; border-radius: 6px; border: 1px solid #ccc; }
+button { background: #2563eb; color: #fff; border: 0; cursor: pointer; }
+.board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+.col { background: #e5e7eb; border-radius: 8px; padding: .75rem; }
+.card { background: #fff; padding: .6rem; border-radius: 6px; margin-bottom: .5rem; border-left: 4px solid #9ca3af; }
+.card.p1 { border-left-color: #dc2626; } .card.p2 { border-left-color: #f59e0b; } .card.p3 { border-left-color: #10b981; }
+.card .meta { font-size: .75rem; color: #666; }
+.card .overdue { color: #dc2626; font-weight: 600; }
+.card button { font-size: .7rem; padding: .2rem .4rem; margin-right: .2rem; background: #6b7280; }
+@media (max-width: 700px) { body { flex-direction: column; } aside { width: 100%; } .board { grid-template-columns: 1fr; } }
