@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TaskBoard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <aside>
+    <h1>TaskBoard</h1>
+    <form id="project-form"><input id="project-name" placeholder="New project" required><button>Add</button></form>
+    <ul id="projects"></ul>
+  </aside>
+  <main>
+    <h2 id="project-title">Select a project</h2>
+    <form id="task-form" hidden>
+      <input id="task-title" placeholder="New task" required>
+      <select id="task-priority"><option value="1">High</option><option value="2" selected>Medium</option><option value="3">Low</option></select>
+      <input id="task-due" type="date">
+      <button>Add task</button>
+    </form>
+    <div id="board" class="board"></div>
+  </main>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
