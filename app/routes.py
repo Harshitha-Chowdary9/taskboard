@@ -11,6 +11,17 @@ def row(r):
     return dict(r) if r else None
 
 
+def json_object():
+    """Only accept a JSON object, not arrays, scalars or malformed JSON."""
+    data = request.get_json(silent=True)
+    return data if isinstance(data, dict) else None
+
+
+def valid_priority(value):
+    # bool is a subclass of int; do not accept True as priority 1.
+    return type(value) is int and value in (1, 2, 3)
+
+
 def error(msg, code=400):
     return jsonify(error=msg), code
 
@@ -34,7 +45,13 @@ def list_projects():
 
 @bp.post("/api/projects")
 def create_project():
-    name = (request.get_json(silent=True) or {}).get("name", "").strip()
+    data = json_object()
+    if data is None:
+        return error("body must be a JSON object")
+    name = data.get("name")
+    if not isinstance(name, str):
+        return error("name must be a string")
+    name = name.strip()
     if not name:
         return error("name is required")
     db = get_db()
@@ -76,13 +93,21 @@ def list_tasks(pid):
 
 @bp.post("/api/projects/<int:pid>/tasks")
 def create_task(pid):
-    data = request.get_json(silent=True) or {}
-    title = data.get("title", "").strip()
+    data = json_object()
+    if data is None:
+        return error("body must be a JSON object")
+    title = data.get("title")
+    if not isinstance(title, str):
+        return error("title must be a string")
+    title = title.strip()
     priority = data.get("priority", 2)
-    due = data.get("due_date") or None
+    due = data.get("due_date")
+    if due is not None and not isinstance(due, str):
+        return error("due_date must be YYYY-MM-DD")
+    due = due or None
     if not title:
         return error("title is required")
-    if priority not in (1, 2, 3):
+    if not valid_priority(priority):
         return error("priority must be 1, 2 or 3")
     if due:
         try:
@@ -103,18 +128,20 @@ def create_task(pid):
 
 @bp.patch("/api/tasks/<int:tid>")
 def update_task(tid):
-    data = request.get_json(silent=True) or {}
+    data = json_object()
+    if data is None:
+        return error("body must be a JSON object")
     fields, args = [], []
     if "status" in data:
-        if data["status"] not in STATUSES:
+        if not isinstance(data["status"], str) or data["status"] not in STATUSES:
             return error("invalid status")
         fields.append("status = ?"); args.append(data["status"])
     if "title" in data:
-        if not str(data["title"]).strip():
+        if not isinstance(data["title"], str) or not data["title"].strip():
             return error("title cannot be empty")
         fields.append("title = ?"); args.append(data["title"].strip())
     if "priority" in data:
-        if data["priority"] not in (1, 2, 3):
+        if not valid_priority(data["priority"]):
             return error("priority must be 1, 2 or 3")
         fields.append("priority = ?"); args.append(data["priority"])
     if not fields:
